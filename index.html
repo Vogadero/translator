@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>翻译</title>
+    <link rel="shortcut icon" href="语言翻译.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/layui.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- 翻译容器 -->
+    <div class="layui-container">
+        <div class="layui-progress" style="margin: 15px 0 30px;">
+            <div class="layui-progress-bar" lay-percent="100%"></div>
+        </div>
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label layui-bg-black">原文</label>
+                <div class="layui-input-block">
+                    <textarea name="desc" placeholder="请输入需要翻译的文字" class="layui-textarea" id="original"></textarea>
+                </div>
+            </div>
+        </form>
+        <button type="button" class="layui-btn layui-btn-radius layui-btn-normal" lay-active="translate">翻译</button>
+        <div class="layui-progress" style="margin: 15px 0 30px;">
+            <div class="layui-progress-bar layui-bg-orange" lay-percent="100%"></div>
+        </div>
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label layui-bg-black">译文</label>
+                <div class="layui-input-block" id="translation-box">
+                    <textarea name="desc" class="layui-textarea" id="translation"></textarea>
+                </div>
+            </div>
+        </form>
+        <blockquote class="layui-elem-quote" style="margin-top: 30px;">
+            <div class="layui-text">
+                <ul>
+                    <li>开发人员：<span>Vogadero</span></li>
+                    <li>框架：<span>layui是一套开源的 Web UI（界面）组件库</span></li>
+                </ul>
+            </div>
+        </blockquote>
+    </div>
+
+    <!-- 引入layui的js -->
+    <script src="js/layui.js"></script>
+    <!-- 引入template-web模版库文件 -->
+    <script src="js/template-web.js"></script>
+    <!-- 模版内容 -->
+    <script type="text/html" id="translation-tpl">
+        <textarea name="desc" class="layui-textarea" id="translation">{{info}}</textarea>
+    </script>
+    <script type="text/javascript">
+        var original = document.getElementById("original");
+        var translation = document.getElementById("translation");
+        var translationBox = document.getElementById("translation-box");
+        layui.use(function () {
+            var layer = layui.layer,
+                util = layui.util;
+
+            util.event("lay-active", {
+                "translate": function () {
+                    $.ajax({
+                        type: "get",
+                        url: "https://api.asilu.com/fanyi/",
+                        dataType: "jsonp",
+                        data: {
+                            q: original.value,
+                            type: "String"
+                        },
+                        success: function (data) {
+                            var html = template("translation-tpl", {
+                                info: data.data
+                            });
+                            translationBox.innerHTML = html;
+                        }
+                    })
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
